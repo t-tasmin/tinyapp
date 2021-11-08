@@ -20,11 +20,18 @@ app.get("/urls", (req, res) => {
   res.render("urls_index", templateVars);
 });
 
+app.get("/urls/new", (req, res) => {
+  res.render("urls_new");
+});
+
+
 // If we type http://localhost:8080/urls/b2xVn2 as url then req.params.shortURL=b2xVn2
+// get requests with : should be placed at the end 
 app.get("/urls/:shortURL", (req, res) => {
   const templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL] };
   res.render("urls_show", templateVars);
 });
+
 
 
 
