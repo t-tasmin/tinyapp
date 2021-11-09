@@ -50,7 +50,12 @@ app.get("/urls/:shortURL", (req, res) => {
 
 app.get("/u/:shortURL", (req, res) => {
   const longURL = urlDatabase[req.params.shortURL];
-  res.redirect(longURL);
+  if (req.params.shortURL in urlDatabase)
+  {res.redirect(longURL);}
+  else
+  {
+    res.send("This URL is not found");
+  }
 });
 
 
