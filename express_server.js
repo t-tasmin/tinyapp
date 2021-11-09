@@ -31,13 +31,15 @@ app.get("/urls", (req, res) => {
 //browser use POST request when submitting form data (add a resource) to server
 app.post("/urls", (req, res) => {
   console.log(req.body);  // Log the POST request body to the console
-  res.send("Ok");         // Respond with 'Ok' (we will replace this)
+  //res.send("Ok");         // Respond with 'Ok' (we will replace this)
   const shortURL = generateRandomString(6);
   const longURL = req.body.longURL;
   urlDatabase[shortURL] = longURL;
   console.log(urlDatabase);
-});
 
+  //Redirect means browser is requesting for this
+  res.redirect(`/urls/${shortURL}`);
+});
 
 
 // If we type http://localhost:8080/urls/b2xVn2 as url then req.params.shortURL=b2xVn2
