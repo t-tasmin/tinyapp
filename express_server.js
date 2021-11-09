@@ -29,7 +29,7 @@ app.get("/urls", (req, res) => {
   res.render("urls_index", templateVars);
 });
 
-//browser use POST request when submitting form data (add a resource) to server
+//Add a POST request when submitting form data (add a resource) to server
 app.post("/urls", (req, res) => {
   console.log(req.body);  // Log the POST request body to the console
   const shortURL = generateRandomString(6);
@@ -46,6 +46,11 @@ app.post("/urls/:shortURL/delete", (req, res) => {
   const shortURL = req.params.shortURL;
   delete urlDatabase[shortURL];  // Log the POST request body to the console
   res.redirect("/urls");
+});
+
+app.post("/urls/:shortURL", (req, res) => {
+  const shortURL = req.params.shortURL;
+  res.redirect(`/urls/${shortURL}`);
 });
 
 // If we type http://localhost:8080/urls/b2xVn2 as url then req.params.shortURL=b2xVn2
