@@ -2,6 +2,7 @@ const express = require("express");
 const app = express();
 const PORT = 8080; // default port 8080
 
+
 app.use(express.urlencoded({ extended: true}));
 
 
@@ -40,6 +41,12 @@ app.post("/urls", (req, res) => {
   res.redirect(`/urls/${shortURL}`);
 });
 
+// Add a POST route that removes a URL resource: POST /urls/:shortURL/delete
+app.post("/urls/:shortURL/delete", (req, res) => {
+  const shortURL = req.params.shortURL;
+  delete urlDatabase[shortURL];  // Log the POST request body to the console
+  res.redirect("/urls");
+});
 
 // If we type http://localhost:8080/urls/b2xVn2 as url then req.params.shortURL=b2xVn2
 // get requests with : should be placed at the end 
