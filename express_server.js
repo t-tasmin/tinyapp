@@ -59,17 +59,24 @@ app.post("/urls", (req, res) => {
   res.redirect(`/urls/${shortURL}`);
 });
 
-// Add a POST route when press the delete button of  URL resource:
+// Add a POST route, it triggers when the delete button of  /urls is pressed
 app.post("/urls/:shortURL/delete", (req, res) => {
   const shortURL = req.params.shortURL;
   delete urlDatabase[shortURL];  // Log the POST request body to the console
   res.redirect("/urls");
 });
 
-// Add a POST route when press the Edit button of  URL resource, it will redirect to the corresponding URL 
+// Add a POST route, it triggers when the Edit button of /urls is pressed, it redirects to that particular url
 app.post("/urls/:shortURL", (req, res) => {
   const shortURL = req.params.shortURL;    
   res.redirect(`/urls/${shortURL}`);
+});
+
+// Add a POST route, it triggers when the longURL is entered for updating urlDatabase 
+app.post("/urls/:shortURL/update", (req, res) => {
+  const shortURL = req.params.shortURL;
+  urlDatabase[shortURL] = req.body.longURL;
+  res.redirect("/urls");
 });
 
 
