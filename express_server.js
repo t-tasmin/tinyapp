@@ -11,12 +11,26 @@ app.use(express.urlencoded({ extended: true}));
 //EJS is set as express's templating engine/view engine
 app.set("view engine", "ejs");
 
-//********************************************************************************//
+//**********************************CONSTANTS AND OBJECTS*********************************************//
 const PORT = 8080; // default port 8080
 const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com"
 };
+
+
+const users = { 
+  "a24d34": {
+    id: "a24d34", 
+    email: "user@example.com", 
+    password: "purple-monkey-dinosaur"
+  },
+  "b4f5s6": {
+    id: "b4f5s6", 
+    email: "user2@example.com", 
+    password: "dishwasher-funk"
+  }
+}
 
 //*******************************************************************************//
 //The callback function with get/ post is registered as  a handler
@@ -27,12 +41,11 @@ const urlDatabase = {
 //************************************GET ROUTES ***********************************/
 //**********************************************************************************/
 app.get("/urls", (req, res) => {
-  console.log(req.cookies["username"]);
+  console.log(req.cookies["user_id"]);
   let templateVars = {
     urls: urlDatabase,
-    username:req.cookies["username"]};
-  
-  res.render("urls_index", templateVars); // render means it will create an ejs template and convert to html
+    user: users[req.cookies["user_id"]]};
+    res.render("urls_index", templateVars); // render means it will create an ejs template and convert to html
 });
 
 app.get("/urls/new", (req, res) => {
@@ -57,8 +70,10 @@ app.get("/u/:shortURL", (req, res) => {
 
 
 app.get("/register", (req, res) => {
-  const templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL], username:req.cookies["username"]};
-  res.render("register", templateVars);
+  let templateVars = {
+    urls: urlDatabase,
+    user: users[req.cookies["user_id"]]};
+    res.render("register", templateVars);
 });
 //**********************************************************************************/
 //************************************POST ROUTES **********************************/
@@ -107,6 +122,16 @@ app.post("/logout", (req, res) => {
   res.redirect("/urls");
 });
 
+// Add a POST route, it triggers when the register button is pressed
+ app.post("/register", (req, res) => {
+  const id = generateRandomString(6);
+  const email= req.body.email; 
+  const password= req.body.password; 
+  users[id]= {id, email, password};
+  console.log(users);
+  res.cookie("user_id", id);
+  res.redirect("/urls");
+});
 //********************************************************************************//
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
