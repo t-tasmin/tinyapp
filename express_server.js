@@ -1,3 +1,4 @@
+const checkemail = require("./checkemail");
 const express = require("express");
 const app = express();
 
@@ -125,12 +126,21 @@ app.post("/logout", (req, res) => {
 // Add a POST route, it triggers when the register button is pressed
  app.post("/register", (req, res) => {
   const id = generateRandomString(6);
-  const email= req.body.email; 
+  let email= req.body.email; 
   const password= req.body.password; 
+  if (email==="")
+  {
+    res.status(400).send('Not a valid Email'); 
+  }
+  else if (checkemail(email, users)){
+    res.status(400).send('Email already Exits');
+  }
+  else{
   users[id]= {id, email, password};
   console.log(users);
   res.cookie("user_id", id);
   res.redirect("/urls");
+  }
 });
 //********************************************************************************//
 app.listen(PORT, () => {
