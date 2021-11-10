@@ -1,16 +1,24 @@
 const express = require("express");
 const app = express();
+
+//cookie-parser serves as Express middleware that helps us read the values from the cookie. 
+const cookieParser = require('cookie-parser');
+app.use(cookieParser());
+
 // Used as body-parser
 app.use(express.urlencoded({ extended: true}));
+
 //EJS is set as express's templating engine/view engine
 app.set("view engine", "ejs");
 
+//********************************************************************************//
 const PORT = 8080; // default port 8080
 const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com"
 };
 
+//*******************************************************************************//
 //The callback function with get/ post is registered as  a handler
 //This function is called whenever a request is made to our server application.
 // This function handles which the requests and sends response
@@ -19,7 +27,11 @@ const urlDatabase = {
 //************************************GET ROUTES ***********************************/
 //**********************************************************************************/
 app.get("/urls", (req, res) => {
-  const templateVars = { urls: urlDatabase }; //urldatabase will be sent as an object
+  
+  let templateVars = {
+   urls: urlDatabase,
+   username:req.cookies["username"]};///Add an endpoint to handle a POST to /login 
+  
   res.render("urls_index", templateVars); // render means it will create an ejs template and convert to html
 });
 
@@ -80,10 +92,18 @@ app.post("/urls/:shortURL/update", (req, res) => {
 });
 
 
+// Add a POST route, it triggers when the login button is pressed 
+app.post("/login", (req, res) => {
+  res.cookie("username", req.body.username);
+  res.redirect("/urls");
+});
+
+//********************************************************************************//
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
 
+//********************************************************************************//
 //Generate a random alpha-numeric string
 function generateRandomString(length) {
   const chars='0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
