@@ -1,4 +1,5 @@
 const checkemail = require("./checkemail");
+const checkEmailMatchPassword=require('./checkEmailMatchPassword');
 const express = require("express");
 const app = express();
 
@@ -42,7 +43,6 @@ const users = {
 //************************************GET ROUTES ***********************************/
 //**********************************************************************************/
 app.get("/urls", (req, res) => {
-  console.log(req.cookies["user_id"]);
   let templateVars = {
     urls: urlDatabase,
     user: users[req.cookies["user_id"]]};
@@ -75,6 +75,13 @@ app.get("/register", (req, res) => {
     urls: urlDatabase,
     user: users[req.cookies["user_id"]]};
     res.render("register", templateVars);
+});
+
+app.get("/login", (req, res) => {
+  let templateVars = {
+    urls: urlDatabase,
+    user: users[req.cookies["user_id"]]};
+    res.render("login", templateVars);
 });
 //**********************************************************************************/
 //************************************POST ROUTES **********************************/
@@ -113,8 +120,28 @@ app.post("/urls/:shortURL/update", (req, res) => {
 
 // Add a POST route, it triggers when the login button is pressed
 app.post("/login", (req, res) => {
-  res.cookie("username", req.body.name);
+  let email= req.body.email; 
+  const password= req.body.password; 
+  if (!checkemail(email, users)){
+    res.status(403).send('Email is not found!');
+  }
+  else{
+    if (!checkEmailMatchPassword(users,email, password)){
+      res.status(403).send('Email and Password does not match!');
+    }
+    else{
+      let id="";
+      for (let key in users)
+      {
+          if (users[key].email === email){
+            id = users[key].id ;
+          }
+      }
+      console.log(id);
+  res.cookie("user_id", id);
   res.redirect("/urls");
+    }
+  }
 });
 
 // Add a POST route, it triggers when the logout button is pressed
