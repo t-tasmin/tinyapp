@@ -50,10 +50,15 @@ app.get("/urls", (req, res) => {
 });
 
 app.get("/urls/new", (req, res) => {
+  if (req.cookies["user_id"]){
   let templateVars = {
     urls: urlDatabase,
     user: users[req.cookies["user_id"]]};
   res.render("urls_new",templateVars);
+  }
+  else{
+    res.redirect('/login');
+  }
 });
 
 //req.params is an object {shortURL:the number}
@@ -63,6 +68,7 @@ app.get("/urls/:shortURL", (req, res) => {
   res.render("urls_show", templateVars);
 });
 
+// This route will directly redirect to actual webpage 
 app.get("/u/:shortURL", (req, res) => {
   const longURL = urlDatabase[req.params.shortURL];
   if (req.params.shortURL in urlDatabase) {
