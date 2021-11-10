@@ -55,7 +55,7 @@ app.get("/urls/new", (req, res) => {
 //req.params is an object {shortURL:the number}
 // If we type localhost:8080/urls/b2xVn2, then req.params.shortURL=b2xVn2
 app.get("/urls/:shortURL", (req, res) => {
-  const templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL], username:req.cookies["username"]};
+  const templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL], user: users[req.cookies["user_id"]]};
   res.render("urls_show", templateVars);
 });
 
