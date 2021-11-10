@@ -6,19 +6,27 @@
 
   <!-- Bootstrap CSS -->
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
-  <title>TinyApp</title>
+  <title>Registration</title>
   <%- include('partials/_header', {user}); %>
 </head>
 <body>
   <main style="margin: 1em;">
     <h3>Create Account</h3>
-    <form align="left" action="/register" method="POST">
-        <div><label for="Email">Email Address</label></div>
-        <div><input class="form-control" type="text" name="email" placeholder="Enter Email" style="width: 300px; margin: 1em"></div>
-        <div><label for="Password">Password</label></div>
-        <div><input class="form-control" type="password" name="password" placeholder="Enter Password" style="width: 300px; margin: 1em"></div>
-        <div><button type="submit" class="btn btn-primary">Register</button></div>
-     </form>
+    <br>
+    <form  action="/register" method="POST">
+        <label for="Email"><b>Email Address</b></label>
+        <br>
+        <input type="text" name="email" placeholder="Enter Email" >
+        <br>
+        <br>
+        <label for="Password"><b>Password</b></label>
+        <br>
+        <input  type="password" name="password" placeholder="Enter Password" >
+        <br>
+        <br>
+        <button type="submit" class="btn btn-primary">Register</button>
+        <br>
+      </form>
   </main>
   <!-- Bootstrap JS -->
   <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
