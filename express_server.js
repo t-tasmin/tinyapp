@@ -50,7 +50,10 @@ app.get("/urls", (req, res) => {
 });
 
 app.get("/urls/new", (req, res) => {
-  res.render("urls_new");
+  let templateVars = {
+    urls: urlDatabase,
+    user: users[req.cookies["user_id"]]};
+  res.render("urls_new",templateVars);
 });
 
 //req.params is an object {shortURL:the number}
@@ -146,7 +149,8 @@ app.post("/login", (req, res) => {
 
 // Add a POST route, it triggers when the logout button is pressed
 app.post("/logout", (req, res) => {
-  res.clearCookie("username", req.body.username);
+  console.log(req.body.id);
+  res.clearCookie("user_id");
   res.redirect("/urls");
 });
 
