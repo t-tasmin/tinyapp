@@ -1,5 +1,5 @@
 const checkemail = require("./checkemail");
-const checkEmailMatchPassword=require('./checkEmailMatchPassword');
+const checkEmailMatchPassword = require('./checkEmailMatchPassword');
 const express = require("express");
 const app = express();
 
@@ -21,18 +21,18 @@ const urlDatabase = {
 };
 
 
-const users = { 
+const users = {
   "a24d34": {
-    id: "a24d34", 
-    email: "user@example.com", 
+    id: "a24d34",
+    email: "user@example.com",
     password: "purple-monkey-dinosaur"
   },
   "b4f5s6": {
-    id: "b4f5s6", 
-    email: "user2@example.com", 
+    id: "b4f5s6",
+    email: "user2@example.com",
     password: "dishwasher-funk"
   }
-}
+};
 
 //*******************************************************************************//
 //The callback function with get/ post is registered as  a handler
@@ -46,7 +46,7 @@ app.get("/urls", (req, res) => {
   let templateVars = {
     urls: urlDatabase,
     user: users[req.cookies["user_id"]]};
-    res.render("urls_index", templateVars); // render means it will create an ejs template and convert to html
+  res.render("urls_index", templateVars); // render means it will create an ejs template and convert to html
 });
 
 app.get("/urls/new", (req, res) => {
@@ -77,14 +77,14 @@ app.get("/register", (req, res) => {
   let templateVars = {
     urls: urlDatabase,
     user: users[req.cookies["user_id"]]};
-    res.render("register", templateVars);
+  res.render("register", templateVars);
 });
 
 app.get("/login", (req, res) => {
   let templateVars = {
     urls: urlDatabase,
     user: users[req.cookies["user_id"]]};
-    res.render("login", templateVars);
+  res.render("login", templateVars);
 });
 //**********************************************************************************/
 //************************************POST ROUTES **********************************/
@@ -123,26 +123,23 @@ app.post("/urls/:shortURL/update", (req, res) => {
 
 // Add a POST route, it triggers when the login button is pressed
 app.post("/login", (req, res) => {
-  let email= req.body.email; 
-  const password= req.body.password; 
-  if (!checkemail(email, users)){
+  let email = req.body.email;
+  const password = req.body.password;
+  if (!checkemail(email, users)) {
     res.status(403).send('Email is not found!');
-  }
-  else{
-    if (!checkEmailMatchPassword(users,email, password)){
+  } else {
+    if (!checkEmailMatchPassword(users,email, password)) {
       res.status(403).send('Email and Password does not match!');
-    }
-    else{
-      let id="";
-      for (let key in users)
-      {
-          if (users[key].email === email){
-            id = users[key].id ;
-          }
+    } else {
+      let id = "";
+      for (let key in users) {
+        if (users[key].email === email) {
+          id = users[key].id;
+        }
       }
       console.log(id);
-  res.cookie("user_id", id);
-  res.redirect("/urls");
+      res.cookie("user_id", id);
+      res.redirect("/urls");
     }
   }
 });
@@ -155,22 +152,19 @@ app.post("/logout", (req, res) => {
 });
 
 // Add a POST route, it triggers when the register button is pressed
- app.post("/register", (req, res) => {
+app.post("/register", (req, res) => {
   const id = generateRandomString(6);
-  let email= req.body.email; 
-  const password= req.body.password; 
-  if (email==="")
-  {
-    res.status(400).send('Not a valid Email'); 
-  }
-  else if (checkemail(email, users)){
+  let email = req.body.email;
+  const password = req.body.password;
+  if (email === "") {
+    res.status(400).send('Not a valid Email');
+  } else if (checkemail(email, users)) {
     res.status(400).send('Email already Exits');
-  }
-  else{
-  users[id]= {id, email, password};
-  console.log(users);
-  res.cookie("user_id", id);
-  res.redirect("/urls");
+  } else {
+    users[id] = {id, email, password};
+    console.log(users);
+    res.cookie("user_id", id);
+    res.redirect("/urls");
   }
 });
 //********************************************************************************//
@@ -180,10 +174,10 @@ app.listen(PORT, () => {
 
 //********************************************************************************//
 //Generate a random alpha-numeric string
-function generateRandomString(length) {
+const  generateRandomString = function(length) {
   const chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
   let result = '';
   for (let i = length; i > 0; --i) result += chars[Math.floor(Math.random() * chars.length)];
   return result;
-}
+};
 
