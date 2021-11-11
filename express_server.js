@@ -1,6 +1,7 @@
 const checkemail = require("./checkemail");
 const checkEmailMatchPassword = require('./checkEmailMatchPassword');
 const urlsForUser = require('./urlsForUser');
+
 const express = require("express");
 const app = express();
 
@@ -10,6 +11,9 @@ app.use(cookieParser());
 
 // Used as body-parser
 app.use(express.urlencoded({ extended: true}));
+
+//Used for password Hashing
+const bcrypt = require('bcryptjs');
 
 //EJS is set as express's templating engine/view engine
 app.set("view engine", "ejs");
@@ -27,12 +31,12 @@ const users = {
   "a24d34": {
     id: "a24d34",
     email: "ttasmin@gmail.com",
-    password: "12345"
+    password: bcrypt.hashSync("12345", 10)
   },
   "b4f5s6": {
     id: "b4f5s6",
     email: "user2@example.com",
-    password: "dishwasher-funk"
+    password: bcrypt.hashSync("dishwasher-funk", 10)
   }
 };
 
@@ -168,7 +172,8 @@ app.post("/logout", (req, res) => {
 app.post("/register", (req, res) => {
   const id = generateRandomString(6);
   let email = req.body.email;
-  const password = req.body.password;
+  const password = bcrypt.hashSync(req.body.password, 10);
+
   if (email === "") {
     res.status(400).send('Not a valid Email');
   } else if (checkemail(email, users)) {
