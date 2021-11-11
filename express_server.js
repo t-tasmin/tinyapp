@@ -15,6 +15,9 @@ app.use(express.urlencoded({ extended: true}));
 //Used for password Hashing
 const bcrypt = require('bcryptjs');
 
+const morgan = require('morgan');
+app.use(morgan('dev'))
+
 //EJS is set as express's templating engine/view engine
 app.set("view engine", "ejs");
 
