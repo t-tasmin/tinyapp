@@ -16,9 +16,8 @@ app.set("view engine", "ejs");
 //**********************************CONSTANTS AND OBJECTS*********************************************//
 const PORT = 8080; // default port 8080
 const urlDatabase = {
-  "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com"
-};
+  "b2xVn2": {longURL: "http://www.lighthouselabs.ca",   userID: "aJ48lW"},
+  "9sm5xK": {longURL: "http://www.google.com", userID: "aJ48lW"}};
 
 
 const users = {
@@ -64,13 +63,13 @@ app.get("/urls/new", (req, res) => {
 //req.params is an object {shortURL:the number}
 // If we type localhost:8080/urls/b2xVn2, then req.params.shortURL=b2xVn2
 app.get("/urls/:shortURL", (req, res) => {
-  const templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL], user: users[req.cookies["user_id"]]};
+  const templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL].longURL, user: users[req.cookies["user_id"]]};
   res.render("urls_show", templateVars);
 });
 
 // This route will directly redirect to actual webpage 
 app.get("/u/:shortURL", (req, res) => {
-  const longURL = urlDatabase[req.params.shortURL];
+  const longURL = urlDatabase[req.params.shortURL].longURL;
   if (req.params.shortURL in urlDatabase) {
     res.redirect(longURL);
   } else {
@@ -101,7 +100,7 @@ app.post("/urls", (req, res) => {
   console.log(req.body);  // Log the POST request body to the console
   const shortURL = generateRandomString(6);
   const longURL = req.body.longURL;
-  urlDatabase[shortURL] = longURL;
+  urlDatabase[shortURL] = {longURL:longURL, userID:generateRandomString(6)};
   console.log(urlDatabase);
   //Redirect means browser is requesting for this
   res.redirect(`/urls/${shortURL}`);
@@ -123,7 +122,7 @@ app.post("/urls/:shortURL", (req, res) => {
 // Add a POST route, it triggers when the longURL is entered for updating urlDatabase
 app.post("/urls/:shortURL/update", (req, res) => {
   const shortURL = req.params.shortURL;
-  urlDatabase[shortURL] = req.body.longURL;
+  urlDatabase[shortURL] = {longURL:req.body.longURL, userID:urlDatabase[shortURL].userID};
   res.redirect("/urls");
 });
 
