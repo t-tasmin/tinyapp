@@ -17,7 +17,7 @@ app.set("view engine", "ejs");
 const PORT = 8080; // default port 8080
 const urlDatabase = {
   "b2xVn2": {longURL: "http://www.lighthouselabs.ca",   userID: "aJ48lW"},
-  "9sm5xK": {longURL: "http://www.google.com", userID: "aJ48lW"}};
+  "9sm5xK": {longURL: "http://www.google.com", userID: "a24d34"}};
 
 
 const users = {
@@ -42,10 +42,15 @@ const users = {
 //************************************GET ROUTES ***********************************/
 //**********************************************************************************/
 app.get("/urls", (req, res) => {
+  if (req.cookies["user_id"]){
   let templateVars = {
     urls: urlDatabase,
     user: users[req.cookies["user_id"]]};
   res.render("urls_index", templateVars); // render means it will create an ejs template and convert to html
+  }
+  else{
+    res.redirect('/login');
+  }
 });
 
 app.get("/urls/new", (req, res) => {
@@ -67,7 +72,7 @@ app.get("/urls/:shortURL", (req, res) => {
   res.render("urls_show", templateVars);
 });
 
-// This route will directly redirect to actual webpage 
+// This route will redirect to actual webpage 
 app.get("/u/:shortURL", (req, res) => {
   const longURL = urlDatabase[req.params.shortURL].longURL;
   if (req.params.shortURL in urlDatabase) {
