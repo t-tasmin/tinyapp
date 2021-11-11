@@ -1,5 +1,6 @@
 const checkemail = require("./checkemail");
 const checkEmailMatchPassword = require('./checkEmailMatchPassword');
+const urlsForUser = require('./urlsForUser');
 const express = require("express");
 const app = express();
 
@@ -17,14 +18,16 @@ app.set("view engine", "ejs");
 const PORT = 8080; // default port 8080
 const urlDatabase = {
   "b2xVn2": {longURL: "http://www.lighthouselabs.ca",   userID: "aJ48lW"},
-  "9sm5xK": {longURL: "http://www.google.com", userID: "a24d34"}};
+  "9sm5xK": {longURL: "http://www.google.com", userID: "a24d34"},
+  "csm4xK": {longURL: "http://www.amazon.com", userID: "a24d34"},
+  "1sm4xK": {longURL: "http://www.ebay.com", userID: "a24d34"}};
 
 
 const users = {
   "a24d34": {
     id: "a24d34",
-    email: "user@example.com",
-    password: "purple-monkey-dinosaur"
+    email: "ttasmin@gmail.com",
+    password: "12345"
   },
   "b4f5s6": {
     id: "b4f5s6",
@@ -44,7 +47,7 @@ const users = {
 app.get("/urls", (req, res) => {
   if (req.cookies["user_id"]){
   let templateVars = {
-    urls: urlDatabase,
+    urls: urlsForUser(urlDatabase,req.cookies["user_id"]),
     user: users[req.cookies["user_id"]]};
   res.render("urls_index", templateVars); // render means it will create an ejs template and convert to html
   }
@@ -105,7 +108,7 @@ app.post("/urls", (req, res) => {
   console.log(req.body);  // Log the POST request body to the console
   const shortURL = generateRandomString(6);
   const longURL = req.body.longURL;
-  urlDatabase[shortURL] = {longURL:longURL, userID:generateRandomString(6)};
+  urlDatabase[shortURL] = {longURL:longURL, userID:req.cookies["user_id"]};
   console.log(urlDatabase);
   //Redirect means browser is requesting for this
   res.redirect(`/urls/${shortURL}`);
