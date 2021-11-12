@@ -21,7 +21,7 @@ app.use(express.urlencoded({ extended: true}));
 const bcrypt = require('bcryptjs');
 
 const morgan = require('morgan');
-app.use(morgan('dev'))
+app.use(morgan('dev'));
 
 //EJS is set as express's templating engine/view engine
 app.set("view engine", "ejs");
@@ -57,25 +57,23 @@ const users = {
 //************************************GET ROUTES ***********************************/
 //**********************************************************************************/
 app.get("/urls", (req, res) => {
-  if (req.session.user_id){
-  let templateVars = {
-    urls: urlsForUser(urlDatabase,req.session.user_id),
-    user: users[req.session.user_id]};
-  res.render("urls_index", templateVars); // render means it will create an ejs template and convert to html
-  }
-  else{
+  if (req.session.user_id) {
+    let templateVars = {
+      urls: urlsForUser(urlDatabase,req.session.user_id),
+      user: users[req.session.user_id]};
+    res.render("urls_index", templateVars); // render means it will create an ejs template and convert to html
+  } else {
     res.redirect('/login');
   }
 });
 
 app.get("/urls/new", (req, res) => {
-  if (req.session.user_id){
-  let templateVars = {
-    urls: urlDatabase,
-    user: users[req.session.user_id]};
-  res.render("urls_new",templateVars);
-  }
-  else{
+  if (req.session.user_id) {
+    let templateVars = {
+      urls: urlDatabase,
+      user: users[req.session.user_id]};
+    res.render("urls_new",templateVars);
+  } else {
     res.redirect('/login');
   }
 });
@@ -87,7 +85,7 @@ app.get("/urls/:shortURL", (req, res) => {
   res.render("urls_show", templateVars);
 });
 
-// This route will redirect to actual webpage 
+// This route will redirect to actual webpage
 app.get("/u/:shortURL", (req, res) => {
   let longURL2 = urlDatabase[req.params.shortURL].longURL;
   if (req.params.shortURL in urlDatabase) {
@@ -147,14 +145,14 @@ app.post("/urls/:shortURL/update", (req, res) => {
 app.post("/login", (req, res) => {
   let email = req.body.email;
   const password = req.body.password;
-  const userID= getUserByEmail(email, users);
+  const userID = getUserByEmail(email, users);
   if (userID === null) {
     res.status(403).send('Email is not found!');
   } else {
-        if (!bcrypt.compareSync(password, users[userID].password)) {
+    if (!bcrypt.compareSync(password, users[userID].password)) {
       res.status(403).send('Email and Password does not match!');
     } else {
-      req.session.user_id = userID ;
+      req.session.user_id = userID;
       res.redirect("/urls");
     }
   }
@@ -178,7 +176,7 @@ app.post("/register", (req, res) => {
     res.status(400).send('Email already Exits');
   } else {
     users[id] = {id, email, password};
-    req.session.user_id = id ;
+    req.session.user_id = id;
     res.redirect("/urls");
   }
 });
