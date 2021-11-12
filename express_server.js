@@ -5,9 +5,15 @@ const urlsForUser = require('./urlsForUser');
 const express = require("express");
 const app = express();
 
-//cookie-parser serves as Express middleware that helps us read the values from the cookie.
-const cookieParser = require('cookie-parser');
-app.use(cookieParser());
+//cookie-session serves as Express middleware that helps us read the values from the cookie.
+const cookieSession = require('cookie-session');
+app.use(cookieSession({
+  name: 'session',
+  keys: ['key1','key2'],
+  // Cookie Options
+  maxAge: 24 * 60 * 60 * 1000 // 24 hours
+}));
+
 
 // Used as body-parser
 app.use(express.urlencoded({ extended: true}));
@@ -52,10 +58,10 @@ const users = {
 //************************************GET ROUTES ***********************************/
 //**********************************************************************************/
 app.get("/urls", (req, res) => {
-  if (req.cookies["user_id"]){
+  if (req.session.user_id){
   let templateVars = {
-    urls: urlsForUser(urlDatabase,req.cookies["user_id"]),
-    user: users[req.cookies["user_id"]]};
+    urls: urlsForUser(urlDatabase,req.session.user_id),
+    user: users[req.session.user_id]};
   res.render("urls_index", templateVars); // render means it will create an ejs template and convert to html
   }
   else{
@@ -64,10 +70,10 @@ app.get("/urls", (req, res) => {
 });
 
 app.get("/urls/new", (req, res) => {
-  if (req.cookies["user_id"]){
+  if (req.session.user_id){
   let templateVars = {
     urls: urlDatabase,
-    user: users[req.cookies["user_id"]]};
+    user: users[req.session.user_id]};
   res.render("urls_new",templateVars);
   }
   else{
@@ -78,15 +84,15 @@ app.get("/urls/new", (req, res) => {
 //req.params is an object {shortURL:the number}
 // If we type localhost:8080/urls/b2xVn2, then req.params.shortURL=b2xVn2
 app.get("/urls/:shortURL", (req, res) => {
-  const templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL].longURL, user: users[req.cookies["user_id"]]};
+  const templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL].longURL, user: users[req.session.user_id]};
   res.render("urls_show", templateVars);
 });
 
 // This route will redirect to actual webpage 
 app.get("/u/:shortURL", (req, res) => {
-  const longURL = urlDatabase[req.params.shortURL].longURL;
+  let longURL2 = urlDatabase[req.params.shortURL].longURL;
   if (req.params.shortURL in urlDatabase) {
-    res.redirect(longURL);
+    res.redirect(301, longURL2);
   } else {
     res.send("This URL is not found");
   }
@@ -96,14 +102,14 @@ app.get("/u/:shortURL", (req, res) => {
 app.get("/register", (req, res) => {
   let templateVars = {
     urls: urlDatabase,
-    user: users[req.cookies["user_id"]]};
+    user: users[req.session.user_id]};
   res.render("register", templateVars);
 });
 
 app.get("/login", (req, res) => {
   let templateVars = {
     urls: urlDatabase,
-    user: users[req.cookies["user_id"]]};
+    user: users[req.session.user_id]};
   res.render("login", templateVars);
 });
 //**********************************************************************************/
@@ -112,12 +118,9 @@ app.get("/login", (req, res) => {
 
 //Add a POST request when submitting form data (add a resource) to server
 app.post("/urls", (req, res) => {
-  console.log(req.body);  // Log the POST request body to the console
   const shortURL = generateRandomString(6);
   const longURL = req.body.longURL;
-  urlDatabase[shortURL] = {longURL:longURL, userID:req.cookies["user_id"]};
-  console.log(urlDatabase);
-  //Redirect means browser is requesting for this
+  urlDatabase[shortURL] = {longURL:longURL, userID:req.session.user_id};
   res.redirect(`/urls/${shortURL}`);
 });
 
@@ -157,8 +160,7 @@ app.post("/login", (req, res) => {
           id = users[key].id;
         }
       }
-      console.log(id);
-      res.cookie("user_id", id);
+      req.session.user_id = id ;
       res.redirect("/urls");
     }
   }
@@ -166,8 +168,7 @@ app.post("/login", (req, res) => {
 
 // Add a POST route, it triggers when the logout button is pressed
 app.post("/logout", (req, res) => {
-  console.log(req.body.id);
-  res.clearCookie("user_id");
+  req.session = null;
   res.redirect("/urls");
 });
 
@@ -183,8 +184,7 @@ app.post("/register", (req, res) => {
     res.status(400).send('Email already Exits');
   } else {
     users[id] = {id, email, password};
-    console.log(users);
-    res.cookie("user_id", id);
+    req.session.user_id = id ;
     res.redirect("/urls");
   }
 });
