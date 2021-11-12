@@ -1,9 +1,6 @@
 const { getUserByEmail, urlsForUser } = require("./helpers.js");
-
-
 const express = require("express");
 const app = express();
-
 //cookie-session serves as Express middleware that helps us read the values from the cookie.
 const cookieSession = require('cookie-session');
 app.use(cookieSession({
@@ -12,17 +9,12 @@ app.use(cookieSession({
   // Cookie Options
   maxAge: 24 * 60 * 60 * 1000 // 24 hours
 }));
-
-
 // Used as body-parser
 app.use(express.urlencoded({ extended: true}));
-
 //Used for password Hashing
 const bcrypt = require('bcryptjs');
-
 const morgan = require('morgan');
 app.use(morgan('dev'));
-
 //EJS is set as express's templating engine/view engine
 app.set("view engine", "ejs");
 
@@ -87,9 +79,10 @@ app.get("/urls/:shortURL", (req, res) => {
 
 // This route will redirect to actual webpage
 app.get("/u/:shortURL", (req, res) => {
-  let longURL2 = urlDatabase[req.params.shortURL].longURL;
-  if (req.params.shortURL in urlDatabase) {
-    res.redirect(301, longURL2);
+  const shortURL = req.params.shortURL;
+  if (urlDatabase[shortURL]) {
+    const longURL = "http://" + urlDatabase[shortURL].longURL;
+    res.redirect(longURL);
   } else {
     res.send("This URL is not found");
   }
