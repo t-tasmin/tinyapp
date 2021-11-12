@@ -1,6 +1,5 @@
-const checkemail = require("./checkemail");
-const checkEmailMatchPassword = require('./checkEmailMatchPassword');
-const urlsForUser = require('./urlsForUser');
+const { getUserByEmail, urlsForUser } = require("./helpers.js");
+
 
 const express = require("express");
 const app = express();
@@ -148,19 +147,14 @@ app.post("/urls/:shortURL/update", (req, res) => {
 app.post("/login", (req, res) => {
   let email = req.body.email;
   const password = req.body.password;
-  if (!checkemail(email, users)) {
+  const userID= getUserByEmail(email, users);
+  if (userID === null) {
     res.status(403).send('Email is not found!');
   } else {
-    if (!checkEmailMatchPassword(users,email, password)) {
+        if (!bcrypt.compareSync(password, users[userID].password)) {
       res.status(403).send('Email and Password does not match!');
     } else {
-      let id = "";
-      for (let key in users) {
-        if (users[key].email === email) {
-          id = users[key].id;
-        }
-      }
-      req.session.user_id = id ;
+      req.session.user_id = userID ;
       res.redirect("/urls");
     }
   }
@@ -180,7 +174,7 @@ app.post("/register", (req, res) => {
 
   if (email === "") {
     res.status(400).send('Not a valid Email');
-  } else if (checkemail(email, users)) {
+  } else if (getUserByEmail(email, users)) {
     res.status(400).send('Email already Exits');
   } else {
     users[id] = {id, email, password};
