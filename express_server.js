@@ -1,5 +1,7 @@
-const { getUserByEmail, urlsForUser } = require("./helpers.js");
+const { getUserByEmail, urlsForUser, generateRandomString } = require("./helpers.js");
 const express = require("express");
+
+
 const app = express();
 //cookie-session serves as Express middleware that helps us read the values from the cookie.
 const cookieSession = require('cookie-session');
@@ -158,7 +160,7 @@ app.post("/login", (req, res) => {
 // Add a POST route, it triggers when the logout button is pressed
 app.post("/logout", (req, res) => {
   req.session = null;
-  res.redirect("/urls");
+  res.redirect("/login");
 });
 
 // Add a POST route, it triggers when the register button is pressed
@@ -184,13 +186,4 @@ app.post("/register", (req, res) => {
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
-
-//********************************************************************************//
-//Generate a random alpha-numeric string
-const  generateRandomString = function(length) {
-  const chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-  let result = '';
-  for (let i = length; i > 0; --i) result += chars[Math.floor(Math.random() * chars.length)];
-  return result;
-};
 
