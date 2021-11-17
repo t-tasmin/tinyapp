@@ -161,13 +161,16 @@ app.post("/logout", (req, res) => {
 app.post("/register", (req, res) => {
   const id = generateRandomString(6);
   let email = req.body.email;
-  const password = bcrypt.hashSync(req.body.password, 10);
+  let password = req.body.password;
 
   if (email === "") {
     res.status(400).send('Not a valid Email');
+  } else if(password === "") {
+    res.status(400).send('Not a valid Password');
   } else if (getUserByEmail(email, users)) {
     res.status(400).send('Email already Exits');
   } else {
+    password = bcrypt.hashSync(req.body.password, 10);
     users[id] = {id, email, password};
     req.session.user_id = id;
     res.redirect("/urls");
