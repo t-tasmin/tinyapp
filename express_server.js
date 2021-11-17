@@ -55,7 +55,7 @@ app.get("/urls", (req, res) => {
       user: users[req.session.user_id]};
     res.render("urls_index", templateVars); // render means it will create an ejs template and convert to html
   } else {
-    res.redirect('/login');
+    res.status(400).send('You are not logged in');
   }
 });
 
@@ -66,15 +66,19 @@ app.get("/urls/new", (req, res) => {
       user: users[req.session.user_id]};
     res.render("urls_new",templateVars);
   } else {
-    res.redirect('/login');
+    res.status(400).send('You are not logged in');
   }
 });
 
 //req.params is an object {shortURL:the number}
 // If we type localhost:8080/urls/b2xVn2, then req.params.shortURL=b2xVn2
 app.get("/urls/:shortURL", (req, res) => {
+  if (req.session.user_id && req.params.shortURL in urlsForUser(urlDatabase,req.session.user_id) ) {
   const templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL].longURL, user: users[req.session.user_id]};
   res.render("urls_show", templateVars);
+  } else {
+    res.status(400).send('You are not logged in');
+  }
 });
 
 // This route will redirect to actual webpage
