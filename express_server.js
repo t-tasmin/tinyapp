@@ -57,7 +57,7 @@ app.get("/urls", (req, res) => {
       user: users[req.session.user_id]};
     res.render("urls_index", templateVars); // render means it will create an ejs template and convert to html
   } else {
-    res.status(400).send('You are not logged in');
+    res.redirect("/login");
   }
 });
 
@@ -68,7 +68,7 @@ app.get("/urls/new", (req, res) => {
       user: users[req.session.user_id]};
     res.render("urls_new",templateVars);
   } else {
-    res.status(400).send('You are not logged in');
+    res.redirect("/login");
   }
 });
 
@@ -78,8 +78,11 @@ app.get("/urls/:shortURL", (req, res) => {
   if (req.session.user_id && req.params.shortURL in urlsForUser(urlDatabase,req.session.user_id) ) {
   const templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL].longURL, user: users[req.session.user_id]};
   res.render("urls_show", templateVars);
-  } else {
-    res.status(400).send('You are not logged in');
+  } else if (!(req.params.shortURL in urlDatabase)){
+    res.status(400).send("URL does not exist");
+  }
+    else {
+    res.status(400).send("This URL does not belong to you.");
   }
 });
 
@@ -87,13 +90,21 @@ app.get("/urls/:shortURL", (req, res) => {
 app.get("/u/:shortURL", (req, res) => {
   const shortURL = req.params.shortURL;
   if (urlDatabase[shortURL]) {
-    const longURL = "http://" + urlDatabase[shortURL].longURL;
+    const longURL =urlDatabase[shortURL].longURL;
+    console.log(longURL);
     res.redirect(longURL);
   } else {
     res.send("This URL is not found");
   }
 });
 
+app.get("/", (req, res) => {
+  if (req.session.user_id) {
+    res.redirect("/urls");
+  } else {
+    res.redirect("/login");
+  }
+});
 
 app.get("/register", (req, res) => {
   let templateVars = {
